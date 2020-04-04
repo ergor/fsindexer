@@ -1,9 +1,9 @@
-package no.netb.archiver.repository;
+package no.netb.repository;
 
 import de.perschon.resultflow.Result;
-import no.netb.archiver.common.Pair;
-import no.netb.archiver.common.ReflectionUtil;
-import no.netb.archiver.models.*;
+import no.netb.common.Pair;
+import no.netb.common.ReflectionUtil;
+import no.netb.models.*;
 
 import java.lang.reflect.Field;
 

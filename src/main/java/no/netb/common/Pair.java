@@ -1,4 +1,4 @@
-package no.netb.archiver.common;
+package no.netb.common;
 
 public class Pair<T, U> {
     private T first;

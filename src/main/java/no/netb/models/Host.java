@@ -1,6 +1,6 @@
-package no.netb.archiver.models;
+package no.netb.models;
 
-import no.netb.archiver.annotations.Db;
+import no.netb.annotations.Db;
 
 public class Host extends ModelBase {
 

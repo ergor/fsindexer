@@ -1,8 +1,8 @@
-package no.netb.archiver;
+package no.netb;
 
 import de.perschon.resultflow.Result;
-import no.netb.archiver.models.Host;
-import no.netb.archiver.models.IndexRun;
+import no.netb.models.Host;
+import no.netb.models.IndexRun;
 
 import java.io.File;
 

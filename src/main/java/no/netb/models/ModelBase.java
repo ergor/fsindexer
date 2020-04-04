@@ -1,7 +1,7 @@
-package no.netb.archiver.models;
+package no.netb.models;
 
-import no.netb.archiver.annotations.Db;
-import no.netb.archiver.annotations.Pk;
+import no.netb.annotations.Db;
+import no.netb.annotations.Pk;
 
 public abstract class ModelBase {
 

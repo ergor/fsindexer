@@ -1,6 +1,6 @@
-package no.netb.archiver.repository;
+package no.netb.repository;
 
-import no.netb.archiver.models.FsNode;
+import no.netb.models.FsNode;
 
 public class FsNodeRepository {
 

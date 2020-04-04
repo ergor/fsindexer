@@ -1,4 +1,4 @@
-package no.netb.archiver;
+package no.netb;
 
 public enum ErrorState {
     IllegalArgument

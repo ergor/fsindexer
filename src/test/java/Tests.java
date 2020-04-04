@@ -1,10 +1,9 @@
 import de.perschon.resultflow.Result;
-import no.netb.archiver.ErrorState;
-import no.netb.archiver.Indexer;
-import no.netb.archiver.models.FsNode;
-import no.netb.archiver.models.Host;
-import no.netb.archiver.models.TablesInit;
-import no.netb.archiver.repository.Repository;
+import no.netb.Indexer;
+import no.netb.models.FsNode;
+import no.netb.models.Host;
+import no.netb.models.TablesInit;
+import no.netb.repository.Repository;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

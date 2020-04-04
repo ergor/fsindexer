@@ -5,6 +5,6 @@
         IndexRun.class,
         IndexRunConnector.class,
 })
-package no.netb.archiver.models;
+package no.netb.models;
 
-import no.netb.archiver.annotations.Models;
+import no.netb.annotations.Models;

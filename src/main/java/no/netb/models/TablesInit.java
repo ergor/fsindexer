@@ -1,11 +1,11 @@
-package no.netb.archiver.models;
+package no.netb.models;
 
-import no.netb.archiver.annotations.Db;
-import no.netb.archiver.annotations.Fk;
-import no.netb.archiver.annotations.Models;
-import no.netb.archiver.annotations.Pk;
-import no.netb.archiver.common.ReflectionUtil;
-import no.netb.archiver.repository.Repository;
+import no.netb.annotations.Db;
+import no.netb.annotations.Fk;
+import no.netb.annotations.Models;
+import no.netb.annotations.Pk;
+import no.netb.common.ReflectionUtil;
+import no.netb.repository.Repository;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * The {@link no.netb.archiver.models} package must be loaded for {@link #createTables()} to work.
+ * The {@link no.netb.models} package must be loaded for {@link #createTables()} to work.
  * That means the init function must be inside this package for it to work.
  */
 public class TablesInit {

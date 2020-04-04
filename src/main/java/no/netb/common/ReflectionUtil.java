@@ -1,6 +1,6 @@
-package no.netb.archiver.common;
+package no.netb.common;
 
-import no.netb.archiver.annotations.Db;
+import no.netb.annotations.Db;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

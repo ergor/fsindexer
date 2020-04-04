@@ -1,4 +1,6 @@
-package no.netb.archiver.annotations;
+package no.netb.annotations;
+
+import no.netb.models.ModelBase;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Db {
-    boolean nullable() default false;
+public @interface Fk {
+
+    Class<?extends ModelBase> value();
 }
