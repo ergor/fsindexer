@@ -1,17 +1,18 @@
 package no.netb.models;
 
-import no.netb.annotations.Db;
-import no.netb.annotations.Fk;
+import no.netb.libjsqlite.annotations.Db;
+import no.netb.libjsqlite.annotations.Fk;
+import no.netb.libjsqlite.BaseModel;
 
 import java.sql.Timestamp;
 
-public class IndexRun extends ModelBase {
+public class IndexRun extends BaseModel {
 
     @Db
     private Timestamp timestamp;
 
     @Db
-    @Fk(Host.class)
+    @Fk(model = Host.class)
     private long hostId;
 
     public IndexRun(Host host) {

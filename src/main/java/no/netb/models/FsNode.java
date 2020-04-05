@@ -1,11 +1,12 @@
 package no.netb.models;
 
-import no.netb.annotations.Db;
-import no.netb.annotations.Fk;
+import no.netb.libjsqlite.annotations.Db;
+import no.netb.libjsqlite.annotations.Fk;
+import no.netb.libjsqlite.BaseModel;
 
 import java.sql.Timestamp;
 
-public class FsNode extends ModelBase {
+public class FsNode extends BaseModel {
 
     @Db
     private boolean isFile;
@@ -23,10 +24,10 @@ public class FsNode extends ModelBase {
     private Timestamp modifiedDate;
 
     @Db(nullable = true)
-    @Fk(FsNode.class)
+    @Fk(model = FsNode.class)
     private long parentId;
 
     @Db
-    @Fk(IndexRun.class)
+    @Fk(model = IndexRun.class)
     private long indexRunId;
 }

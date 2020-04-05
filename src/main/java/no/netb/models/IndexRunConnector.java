@@ -1,7 +1,8 @@
 package no.netb.models;
 
-import no.netb.annotations.Db;
-import no.netb.annotations.Fk;
+import no.netb.libjsqlite.annotations.Db;
+import no.netb.libjsqlite.annotations.Fk;
+import no.netb.libjsqlite.BaseModel;
 
 /**
  * To manually connect multiple index runs and mark them as logically 1 index run.
@@ -10,12 +11,12 @@ import no.netb.annotations.Fk;
  * and between the runs you are sure you didn't modify the dirs under indexing.
  * Then you can "connect" the runs together as 1 logical run.
  */
-public class IndexRunConnector extends ModelBase {
+public class IndexRunConnector extends BaseModel {
 
     @Db
     private String uuid; // this will be the logical run id.
 
     @Db
-    @Fk(IndexRun.class)
+    @Fk(model = IndexRun.class)
     private long indexRunId;
 }

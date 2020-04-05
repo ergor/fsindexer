@@ -1,12 +1,13 @@
 package no.netb.models;
 
-import no.netb.annotations.Db;
-import no.netb.annotations.Fk;
+import no.netb.libjsqlite.annotations.Db;
+import no.netb.libjsqlite.annotations.Fk;
+import no.netb.libjsqlite.BaseModel;
 
-public class HostIdentifier extends ModelBase {
+public class HostIdentifier extends BaseModel {
 
     @Db
-    @Fk(Host.class)
+    @Fk(model = Host.class)
     private long hostId;
 
     @Db
