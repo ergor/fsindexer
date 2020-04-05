@@ -1,8 +1,8 @@
-package no.netb;
+package no.netb.syncrodex;
 
-import de.perschon.resultflow.Result;
-import no.netb.models.Host;
-import no.netb.models.IndexRun;
+import no.netb.libjcommon.result.Result;
+import no.netb.syncrodex.models.Host;
+import no.netb.syncrodex.models.IndexRun;
 
 import java.io.File;
 

@@ -1,6 +1,6 @@
-package no.netb.repository;
+package no.netb.syncrodex.repository;
 
-import no.netb.models.FsNode;
+import no.netb.syncrodex.models.FsNode;
 
 public class FsNodeRepository {
 

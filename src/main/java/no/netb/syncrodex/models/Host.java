@@ -1,4 +1,4 @@
-package no.netb.models;
+package no.netb.syncrodex.models;
 
 import no.netb.libjsqlite.annotations.Db;
 import no.netb.libjsqlite.BaseModel;

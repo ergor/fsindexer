@@ -1,12 +1,5 @@
 
-import no.netb.Indexer;
-import no.netb.libjcommon.result.Result;
-import no.netb.libjsqlite.Jsqlite;
-import no.netb.models.Host;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.List;
 
 public class Tests {
 
