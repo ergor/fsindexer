@@ -10,4 +10,9 @@ public class Tests {
 
 
     }
+
+    @Test
+    public void testChecksum() {
+        // compare to linux sha1sum
+    }
 }

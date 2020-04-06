@@ -11,12 +11,12 @@ import no.netb.libjsqlite.BaseModel;
  * and between the runs you are sure you didn't modify the dirs under indexing.
  * Then you can "connect" the runs together as 1 logical run.
  */
-public class IndexRunConnector extends BaseModel {
+public class IndexingRunConnector extends BaseModel {
 
     @Db
     private String uuid; // this will be the logical run id.
 
     @Db
-    @Fk(model = IndexRun.class)
-    private long indexRunId;
+    @Fk(model = IndexingRun.class)
+    private long indexingRunId;
 }

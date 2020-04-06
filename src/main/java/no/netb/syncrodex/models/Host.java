@@ -7,4 +7,20 @@ public class Host extends BaseModel {
 
     @Db
     private String name;
+
+    public Host() {
+        // default constructor required for libjsqlite
+    }
+
+    public Host(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
