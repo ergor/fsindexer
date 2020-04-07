@@ -11,13 +11,8 @@ public class IndexingRun extends BaseModel {
     @Db
     private Timestamp timestamp;
 
-    @Db
-    @Fk(model = Host.class)
-    private long hostId;
-
-    public IndexingRun(Host host) {
+    public IndexingRun() {
         this.timestamp = new Timestamp(System.currentTimeMillis());
-        this.hostId = host.getId();
     }
 
     public Timestamp getTimestamp() {
@@ -26,13 +21,5 @@ public class IndexingRun extends BaseModel {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public long getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(long hostId) {
-        this.hostId = hostId;
     }
 }

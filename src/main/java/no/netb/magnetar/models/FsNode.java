@@ -30,7 +30,7 @@ public class FsNode extends BaseModel {
     @Fk(model = FsNode.class)
     private long parentId;
 
-    @Db
+    @Db (nullable = true)
     @Fk(model = Host.class)
     private long hostId;
 

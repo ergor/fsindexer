@@ -43,13 +43,13 @@ public class Indexer {
             return Result.err(String.format("Indexer: could not list files in %s", directory.getAbsolutePath()));
         }
 
-        IndexingRun indexingRun = new IndexingRun(host);
+        IndexingRun indexingRun = new IndexingRun();
         indexingRun.saveOrFail();
 
-        FsNode directoryNode = FsNodeRepository.getOrNew(indexingRun, directory, directory.getParentFile());
+        FsNode directoryNode = FsNodeRepository.getOrNew(host, indexingRun, directory, directory.getParentFile());
 
         for (File file : files) {
-            FsNode fileNode = FsNodeRepository.getOrNew(indexingRun, file, directory);
+            FsNode fileNode = FsNodeRepository.getOrNew(host, indexingRun, file, directory);
             if (file.isFile()) {
                 sha1Checksum(file).ifPresent(checksum -> {
                     fileNode.setSha1Checksum(sha1String(checksum));

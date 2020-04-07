@@ -3,6 +3,7 @@ package no.netb.magnetar.repository;
 import no.netb.libjcommon.result.Result;
 import no.netb.libjsqlite.Jsqlite;
 import no.netb.magnetar.models.FsNode;
+import no.netb.magnetar.models.Host;
 import no.netb.magnetar.models.IndexingRun;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public class FsNodeRepository {
         return Optional.of(fsNode);
     }
 
-    public static FsNode getOrNew(IndexingRun indexingRun, File file, File parentDir) {
+    public static FsNode getOrNew(Host host, IndexingRun indexingRun, File file, File parentDir) {
         Optional<FsNode> fsNodeOptional = get(indexingRun, file);
         if (fsNodeOptional.isPresent()) {
             return fsNodeOptional.get();
@@ -72,7 +73,7 @@ public class FsNodeRepository {
         if (parentDir != null) { // null means this dir is root
             Optional<FsNode> parentOptional = get(indexingRun, parentDir);
             parentNode = parentOptional.orElseGet(
-                    () -> getOrNew(indexingRun, parentDir, parentDir.getParentFile()));
+                    () -> getOrNew(host, indexingRun, parentDir, parentDir.getParentFile()));
         }
 
         FsNode fsNode = new FsNode(
@@ -83,7 +84,7 @@ public class FsNodeRepository {
                 new Timestamp(0),
                 new Timestamp(file.lastModified()),
                 parentNode == null ? 0 : parentNode.getId(),
-                indexingRun.getHostId(),
+                host.getId(),
                 indexingRun.getId()
         );
 
