@@ -1,10 +1,10 @@
-package no.netb.syncrodex;
+package no.netb.magnetar;
 
 import no.netb.libjcommon.result.Result;
-import no.netb.syncrodex.models.FsNode;
-import no.netb.syncrodex.models.Host;
-import no.netb.syncrodex.models.IndexingRun;
-import no.netb.syncrodex.repository.FsNodeRepository;
+import no.netb.magnetar.models.FsNode;
+import no.netb.magnetar.models.Host;
+import no.netb.magnetar.models.IndexingRun;
+import no.netb.magnetar.repository.FsNodeRepository;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package no.netb.syncrodex;
+package no.netb.magnetar;
 
 public enum ErrorState {
     IllegalArgument

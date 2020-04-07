@@ -1,9 +1,9 @@
-package no.netb.syncrodex.repository;
+package no.netb.magnetar.repository;
 
 import no.netb.libjcommon.result.Result;
 import no.netb.libjsqlite.Jsqlite;
-import no.netb.syncrodex.models.FsNode;
-import no.netb.syncrodex.models.IndexingRun;
+import no.netb.magnetar.models.FsNode;
+import no.netb.magnetar.models.IndexingRun;
 
 import java.io.File;
 import java.sql.Timestamp;

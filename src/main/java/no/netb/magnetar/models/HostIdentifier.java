@@ -1,4 +1,4 @@
-package no.netb.syncrodex.models;
+package no.netb.magnetar.models;
 
 import no.netb.libjsqlite.annotations.Db;
 import no.netb.libjsqlite.annotations.Fk;

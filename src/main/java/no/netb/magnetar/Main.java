@@ -1,10 +1,10 @@
-package no.netb.syncrodex;
+package no.netb.magnetar;
 
 import no.netb.libjcommon.result.Result;
 import no.netb.libjsqlite.Jsqlite;
 import no.netb.libjsqlite.TablesInit;
 import no.netb.libjsqlite.resulttypes.updateresult.UpdateResult;
-import no.netb.syncrodex.models.*;
+import no.netb.magnetar.models.*;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -14,6 +14,10 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws SQLException {
+        // one shot mode & server mode
+        // one shot mode: create db in tmp. allow nulls for host and runid etc.
+        // server mode: allow for interaction via webserver. initiates one shot mode on remotes.
+
         UpdateResult createResult = TablesInit.createTablesIfNotExists(Arrays.asList(
                 FsNode.class,
                 Host.class,
