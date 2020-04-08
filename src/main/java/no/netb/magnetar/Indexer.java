@@ -1,6 +1,7 @@
 package no.netb.magnetar;
 
 import no.netb.libjcommon.result.Result;
+import no.netb.libjsqlite.Database;
 import no.netb.magnetar.models.FsNode;
 import no.netb.magnetar.models.Host;
 import no.netb.magnetar.models.IndexingRun;
@@ -13,25 +14,37 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class Indexer {
 
-    private static final int DIGEST_BLOCK_SZ = 128*1024;
-    private static final byte[] DIGEST_BUF = new byte[DIGEST_BLOCK_SZ];
-    private static MessageDigest sha1Digest;
-    static {
+    private static final Logger LOG = Logger.getLogger(Indexer.class.getName());
+
+    private final int DIGEST_BLOCK_SZ = 128*1024;
+    private final byte[] DIGEST_BUF = new byte[DIGEST_BLOCK_SZ];
+
+    private Database database;
+    private Host host;
+    private MessageDigest sha1Digest;
+    private FsNodeRepository fsNodeRepository;
+
+    public static Result<Indexer, Exception> init(Database database, Host host) {
         try {
-            sha1Digest = MessageDigest.getInstance("SHA-1");
+            MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
+            return Result.ok(new Indexer(database, host, sha1Digest));
         } catch (NoSuchAlgorithmException e) {
-            sha1Digest = null;
+            return Result.err(e);
         }
     }
 
-    public static Result<Object, String> index(Host host, File directory) {
+    private Indexer(Database database, Host host, MessageDigest sha1Digest) {
+        this.database = database;
+        this.host = host;
+        this.sha1Digest = sha1Digest;
+        fsNodeRepository = new FsNodeRepository(database);
+    }
 
-        if (sha1Digest == null) {
-            return Result.err("Indexer: message digest instance null");
-        }
+    public Result<Object, String> index(File directory) {
 
         if (!directory.isDirectory()) {
             return Result.err(String.format("Indexer: %s is not a directory (expected directory).", directory.getAbsolutePath()));
@@ -44,16 +57,16 @@ public class Indexer {
         }
 
         IndexingRun indexingRun = new IndexingRun();
-        indexingRun.saveOrFail();
+        indexingRun.saveOrFail(database);
 
-        FsNode directoryNode = FsNodeRepository.getOrNew(host, indexingRun, directory, directory.getParentFile());
+        FsNode directoryNode = fsNodeRepository.getOrNew(host, indexingRun, directory, directory.getParentFile());
 
         for (File file : files) {
-            FsNode fileNode = FsNodeRepository.getOrNew(host, indexingRun, file, directory);
+            FsNode fileNode = fsNodeRepository.getOrNew(host, indexingRun, file, directory);
             if (file.isFile()) {
                 sha1Checksum(file).ifPresent(checksum -> {
                     fileNode.setSha1Checksum(sha1String(checksum));
-                    fileNode.saveOrFail();
+                    fileNode.saveOrFail(database);
                 });
             }
         }
@@ -61,7 +74,7 @@ public class Indexer {
         return Result.ok(null);
     }
 
-    public static Optional<byte[]> sha1Checksum(File file) {
+    public Optional<byte[]> sha1Checksum(File file) {
         if (file.isDirectory()) {
             return Optional.empty();
         }
@@ -77,11 +90,11 @@ public class Indexer {
             return Optional.of(sha1Digest.digest());
         }
         catch (FileNotFoundException e) {
-            System.out.println("WARNING: failed to open file for reading: " + file.getAbsolutePath());
+            LOG.warning("WARNING: failed to open file for reading: " + file.getAbsolutePath());
             e.printStackTrace();
         }
         catch (IOException e) {
-            System.out.println("WARNING: failed while reading file: " + file.getAbsolutePath());
+            LOG.warning("WARNING: failed while reading file: " + file.getAbsolutePath());
             e.printStackTrace();
         }
         return Optional.empty();

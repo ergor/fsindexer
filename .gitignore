@@ -5,6 +5,7 @@ test.db
 test.db.bak
 test.db-journal
 target
+magnetar.db
 
 # User-specific stuff
 .idea/**/workspace.xml

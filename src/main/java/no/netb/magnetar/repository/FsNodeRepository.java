@@ -1,7 +1,7 @@
 package no.netb.magnetar.repository;
 
 import no.netb.libjcommon.result.Result;
-import no.netb.libjsqlite.Jsqlite;
+import no.netb.libjsqlite.Database;
 import no.netb.magnetar.models.FsNode;
 import no.netb.magnetar.models.Host;
 import no.netb.magnetar.models.IndexingRun;
@@ -12,36 +12,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class FsNodeRepository {
 
-    private static Map<IndexingRun, Map<File, FsNode>> fsNodeCache = new HashMap<>();
+    private static final Logger LOG = Logger.getLogger(FsNodeRepository.class.getName());
 
-    public FsNode getOrNewRoot() {
-        //Directory root = ModelBase.getById(1);
-        return null;
+    private Database database;
+
+    private Map<IndexingRun, Map<File, FsNode>> fsNodeCache = new HashMap<>();
+
+    public FsNodeRepository(Database database) {
+        this.database = database;
     }
 
-    public void save(File file) {
-
-    }
-
-    private static Optional<FsNode> getCached(IndexingRun indexingRun, File file) {
+    private Optional<FsNode> getCached(IndexingRun indexingRun, File file) {
         Map<File, FsNode> cache = fsNodeCache.computeIfAbsent(indexingRun, k -> new HashMap<>());
         return Optional.ofNullable(cache.get(file));
     }
 
-    private static void putCache(IndexingRun indexingRun, File file, FsNode fsNode) {
+    private void putCache(IndexingRun indexingRun, File file, FsNode fsNode) {
         fsNodeCache.get(indexingRun).put(file, fsNode);
     }
 
-    public static Optional<FsNode> get(IndexingRun indexingRun, File file) {
+    public Optional<FsNode> get(IndexingRun indexingRun, File file) {
         Optional<FsNode> cachedNode = getCached(indexingRun, file);
         if (cachedNode.isPresent()) {
             return cachedNode;
         }
 
-        Result<List<FsNode>, Exception> selectResult = Jsqlite.selectN(
+        Result<List<FsNode>, Exception> selectResult = database.selectN(
                 FsNode.class,
                 "WHERE f.indexingRunId = ? AND f.isFile = ? AND f.name = ? AND f.path = ?",
                 indexingRun.getId(),
@@ -56,14 +56,14 @@ public class FsNodeRepository {
         if (fsNodes.isEmpty()) {
             return Optional.empty();
         } else if (fsNodes.size() > 1) {
-            System.out.println(String.format("WARNING: select returned %d FsNodes", fsNodes.size()));
+            LOG.warning(String.format("WARNING: select returned %d FsNodes (expected 1)", fsNodes.size()));
         }
         FsNode fsNode = fsNodes.get(0);
         putCache(indexingRun, file, fsNode);
         return Optional.of(fsNode);
     }
 
-    public static FsNode getOrNew(Host host, IndexingRun indexingRun, File file, File parentDir) {
+    public FsNode getOrNew(Host host, IndexingRun indexingRun, File file, File parentDir) {
         Optional<FsNode> fsNodeOptional = get(indexingRun, file);
         if (fsNodeOptional.isPresent()) {
             return fsNodeOptional.get();
@@ -88,7 +88,7 @@ public class FsNodeRepository {
                 indexingRun.getId()
         );
 
-        fsNode.saveOrFail();
+        fsNode.saveOrFail(database);
         putCache(indexingRun, file, fsNode);
         return fsNode;
     }

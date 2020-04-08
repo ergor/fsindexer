@@ -1,6 +1,8 @@
 package no.netb.magnetar;
 
-import no.netb.libjsqlite.TablesInit;
+import no.netb.libjcommon.result.Result;
+import no.netb.libjsqlite.Database;
+import no.netb.libjsqlite.Jsqlite;
 import no.netb.libjsqlite.resulttypes.updateresult.UpdateResult;
 import no.netb.magnetar.models.*;
 
@@ -9,7 +11,7 @@ import java.util.Arrays;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         // one shot mode & server mode
         // one shot mode: create db in tmp. allow nulls for host and runid etc.
         // server mode: allow for interaction via webserver. initiates one shot mode on remotes.
@@ -17,7 +19,10 @@ public class Main {
         ArgParse argParse = new ArgParse(args);
         argParse.parse();
 
-        UpdateResult createResult = TablesInit.createTablesIfNotExists(Arrays.asList(
+        Result<Database, SQLException> connectResult = Jsqlite.connect("magnetar.db", false);
+        Database database = connectResult.unwrap();
+
+        UpdateResult createResult = database.createTablesIfNotExists(Arrays.asList(
                 FsNode.class,
                 Host.class,
                 HostIdentifier.class,

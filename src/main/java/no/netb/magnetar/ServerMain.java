@@ -7,21 +7,26 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerMain implements Runnable{
 
+    private static final Logger LOG = Logger.getLogger(ServerMain.class.getName());
+
     @Override
     public void run() {
+        int port = 8000;
         HttpServer server = null;
         try {
             server = HttpServer.create(new InetSocketAddress(8000), 0);
         } catch (IOException e) {
-            System.out.println("magnetar: failed to start webserver");
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "magnetar: failed to start webserver", e);
             System.exit(ExitCode.INTERNAL_ERROR.value);
         }
         server.createContext("/test", new MagnetarServer());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(null); // run on main thread
+        LOG.info("localhost:" + port + " running...");
         server.start();
     }
 
