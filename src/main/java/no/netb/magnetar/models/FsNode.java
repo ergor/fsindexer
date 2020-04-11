@@ -1,5 +1,6 @@
 package no.netb.magnetar.models;
 
+import no.netb.libjsqlite.EnumColumn;
 import no.netb.libjsqlite.annotations.Db;
 import no.netb.libjsqlite.annotations.Fk;
 import no.netb.libjsqlite.BaseModel;
@@ -8,23 +9,56 @@ import java.sql.Timestamp;
 
 public class FsNode extends BaseModel {
 
+    public enum NodeType implements EnumColumn {
+        FILE(0),
+        DIRECTORY(1),
+        SYMLINK(2),
+        OTHER(3);
+
+        private int value;
+
+        NodeType(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public int toInt() {
+            return value;
+        }
+    }
+
     @Db
-    private boolean isFile;
+    private NodeType nodeType;
 
     @Db
     private String name;
 
     @Db
-    private String path;
+    private long size;
 
     @Db
-    private String sha1Checksum;
+    private int uid;
+
+    @Db
+    private int gid;
+
+    @Db
+    private int permissions;
 
     @Db
     private Timestamp creationDate;
 
     @Db
     private Timestamp modifiedDate;
+
+    @Db
+    private String path;
+
+    @Db(nullable = true)
+    private String linksTo;
+
+    @Db
+    private String sha1Checksum;
 
     @Db(nullable = true)
     @Fk(model = FsNode.class)
@@ -43,8 +77,8 @@ public class FsNode extends BaseModel {
     private long indexingRunId;
 
 
-    public FsNode(boolean isFile, String name, String path, String sha1Checksum, Timestamp creationDate, Timestamp modifiedDate, long parentId, long hostId, long indexingRunId) {
-        this.isFile = isFile;
+    public FsNode(NodeType nodeType, String name, String path, String sha1Checksum, Timestamp creationDate, Timestamp modifiedDate, long parentId, long hostId, long indexingRunId) {
+        this.nodeType = nodeType;
         this.name = name;
         this.path = path;
         this.sha1Checksum = sha1Checksum;
@@ -55,12 +89,12 @@ public class FsNode extends BaseModel {
         this.indexingRunId = indexingRunId;
     }
 
-    public boolean isFile() {
-        return isFile;
+    public NodeType getNodeType() {
+        return nodeType;
     }
 
-    public void setIsFile(boolean file) {
-        isFile = file;
+    public void setNodeType(NodeType nodeType) {
+        this.nodeType = nodeType;
     }
 
     public String getName() {

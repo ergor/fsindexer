@@ -11,9 +11,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Indexer {
@@ -60,9 +64,11 @@ public class Indexer {
         indexingRun.saveOrFail(database);
 
         FsNode directoryNode = fsNodeRepository.getOrNew(host, indexingRun, directory, directory.getParentFile());
+        readFileAttributes(directory, directoryNode);
 
         for (File file : files) {
             FsNode fileNode = fsNodeRepository.getOrNew(host, indexingRun, file, directory);
+            readFileAttributes(file, fileNode);
             if (file.isFile()) {
                 sha1Checksum(file).ifPresent(checksum -> {
                     fileNode.setSha1Checksum(sha1String(checksum));
@@ -109,5 +115,14 @@ public class Indexer {
         }
 
         return sb.toString();
+    }
+
+    private void readFileAttributes(File file, FsNode fsNode) {
+        try {
+            PosixFileAttributes attrs = Files.readAttributes(file.toPath(), PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+
+        } catch (IOException e) {
+            LOG.log(Level.WARNING, "Unable to read attributes of file " + file.getAbsolutePath(), e);
+        }
     }
 }

@@ -77,7 +77,7 @@ public class FsNodeRepository {
         }
 
         FsNode fsNode = new FsNode(
-                file.isFile(),
+                null,
                 file.getName(),
                 file.getPath(),
                 "", // hash
