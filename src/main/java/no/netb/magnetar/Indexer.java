@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Indexer {
+public class Indexer implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(Indexer.class.getName());
 
@@ -31,6 +31,11 @@ public class Indexer {
     private Host host;
     private MessageDigest sha1Digest;
     private FsNodeRepository fsNodeRepository;
+
+    @Override
+    public void run() {
+
+    }
 
     public static Result<Indexer, Exception> init(Database database, Host host) {
         try {

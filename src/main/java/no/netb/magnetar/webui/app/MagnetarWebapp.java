@@ -1,5 +1,6 @@
 package no.netb.magnetar.webui.app;
 
+import no.netb.magnetar.webui.controller.FaultController;
 import no.netb.magnetar.webui.controller.MainController;
 import no.netb.magnetar.webui.controller.MagnetarController;
 import org.thymeleaf.TemplateEngine;
@@ -8,11 +9,13 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MagnetarWebapp {
 
     private final TemplateEngine templateEngine;
     private final Map<String, MagnetarController> controllersByURL;
+    private final MagnetarController faultController;
 
     public MagnetarWebapp() {
 
@@ -26,12 +29,18 @@ public class MagnetarWebapp {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
 
+        this.faultController = new FaultController();
+
         this.controllersByURL = new HashMap<>();
         controllersByURL.put("/", new MainController());
     }
 
-    public Map<String, MagnetarController> getControllersByURL() {
-        return controllersByURL;
+    public Optional<MagnetarController> resolveControllerByURL(String url) {
+        return Optional.ofNullable(controllersByURL.get(url));
+    }
+
+    public MagnetarController getFaultController() {
+        return faultController;
     }
 
     public TemplateEngine getTemplateEngine() {
