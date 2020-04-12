@@ -4,24 +4,28 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import no.netb.magnetar.webui.app.HttpStatus;
-import no.netb.magnetar.webui.app.MagnetarWebapp;
-import no.netb.magnetar.webui.app.Response;
-import no.netb.magnetar.webui.controller.FaultController;
-import no.netb.magnetar.webui.controller.MagnetarController;
-import org.thymeleaf.TemplateEngine;
+import no.netb.magnetar.repository.RepositoryMap;
+import no.netb.magnetar.web.constants.HttpHeader;
+import no.netb.magnetar.web.constants.HttpStatus;
+import no.netb.magnetar.web.app.MagnetarWebapp;
+import no.netb.magnetar.web.app.Response;
+import no.netb.magnetar.web.constants.MimeType;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerMain implements Runnable{
 
     private static final Logger LOG = Logger.getLogger(ServerMain.class.getName());
+
+    private final RepositoryMap repositories;
+
+    public ServerMain(RepositoryMap repositories) {
+        this.repositories = repositories;
+    }
 
     @Override
     public void run() {
@@ -36,7 +40,7 @@ public class ServerMain implements Runnable{
 
         MagnetarWebapp webapp = new MagnetarWebapp();
 
-        server.createContext("/", new MagnetarServer(webapp));
+        server.createContext("/", new MagnetarServer(webapp, repositories));
         server.setExecutor(null); // run on main thread
         LOG.info("localhost:" + port + " running...");
         server.start();
@@ -45,25 +49,34 @@ public class ServerMain implements Runnable{
     static class MagnetarServer implements HttpHandler {
 
         private final MagnetarWebapp webapp;
-        private final TemplateEngine templateEngine;
+        private final RepositoryMap repositories;
 
-        public MagnetarServer(MagnetarWebapp webapp) {
+        public MagnetarServer(MagnetarWebapp webapp, RepositoryMap repositories) {
             this.webapp = webapp;
-            this.templateEngine = webapp.getTemplateEngine();
+            this.repositories = repositories;
         }
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             Response response = webapp.resolveControllerByURL(httpExchange.getRequestURI().toString())
-                    .map(controller -> controller.applyTemplate(httpExchange, templateEngine))
-                    .orElseGet(() -> ((FaultController) webapp.getFaultController()).doFault(HttpStatus.HTTP_404, templateEngine));
+                    .map(controller -> controller.applyTemplate(httpExchange, repositories))
+                    .orElseGet(() -> webapp.getFaultController().handleError(HttpStatus.HTTP_404, httpExchange, null));
 
-            Headers headers = httpExchange.getResponseHeaders();
-            headers.add("Content-Type", "text/html");
-            httpExchange.sendResponseHeaders(response.getHttpStatus().getCode(), response.getResponseLength());
-
+            Headers responseHeaders = httpExchange.getResponseHeaders();
             OutputStream os = httpExchange.getResponseBody();
-            os.write(response.getHtml().getBytes());
+            int responseLength = -1;
+
+            if (response.isRedirect()) {
+                responseHeaders.add(HttpHeader.LOCATION.string, response.getLocation());
+            } else {
+                responseHeaders.add(HttpHeader.CONTENT_TYPE.string, MimeType.TEXT__HTML.string);
+                responseLength = response.getResponseLength();
+            }
+
+            httpExchange.sendResponseHeaders(response.getHttpStatus().getCode(), responseLength);
+            if (responseLength > -1) {
+                os.write(response.getHtml().getBytes());
+            }
             os.close();
         }
     }

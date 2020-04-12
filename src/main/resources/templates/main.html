@@ -1,16 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <title>magnetar</title>
     </head>
 
     <body>
-        <div>Hello world!</div>
-    <form method="post">
-        <label for="testName">TEST INPUT</label>
-        <input id="testName" type="text" name="testName">
-        <input type="submit">
-    </form>
+    <h4>Hosts</h4>
+    <a href="/newHost">[new]</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>SSH Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>localhost</td>
+                <td>n/a</td>
+            </tr>
+            <tr th:each="host : ${hosts}">
+                <td th:text="${host.name}">Name</td>
+                <td th:text="${host.sshConfigName}">SSH Name</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>Indexing runs</h4>
+    <table>
+
+    </table>
     </body>
 </html>

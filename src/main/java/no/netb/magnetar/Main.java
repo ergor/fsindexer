@@ -5,6 +5,9 @@ import no.netb.libjsqlite.Database;
 import no.netb.libjsqlite.Jsqlite;
 import no.netb.libjsqlite.resulttypes.updateresult.UpdateResult;
 import no.netb.magnetar.models.*;
+import no.netb.magnetar.repository.FsNodeRepository;
+import no.netb.magnetar.repository.HostRepository;
+import no.netb.magnetar.repository.RepositoryMap;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -31,8 +34,12 @@ public class Main {
         ));
         createResult.unwrap().commit();
 
+        RepositoryMap repoInstances = new RepositoryMap();
+        repoInstances.put(FsNodeRepository.class, new FsNodeRepository(database));
+        repoInstances.put(HostRepository.class, new HostRepository(database));
+
         Runnable main = argParse.isServerMode()
-                ? new ServerMain()
+                ? new ServerMain(repoInstances)
                 : new SatelliteMain();
         main.run();
 

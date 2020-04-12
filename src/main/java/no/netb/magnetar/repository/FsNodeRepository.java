@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class FsNodeRepository {
+public class FsNodeRepository extends AbstractRepository {
 
     private static final Logger LOG = Logger.getLogger(FsNodeRepository.class.getName());
 
@@ -23,7 +23,7 @@ public class FsNodeRepository {
     private Map<IndexingRun, Map<File, FsNode>> fsNodeCache = new HashMap<>();
 
     public FsNodeRepository(Database database) {
-        this.database = database;
+        super(database);
     }
 
     private Optional<FsNode> getCached(IndexingRun indexingRun, File file) {

@@ -1,8 +1,9 @@
-package no.netb.magnetar.webui.app;
+package no.netb.magnetar.web.app;
 
-import no.netb.magnetar.webui.controller.FaultController;
-import no.netb.magnetar.webui.controller.MainController;
-import no.netb.magnetar.webui.controller.MagnetarController;
+import no.netb.magnetar.web.controller.FaultController;
+import no.netb.magnetar.web.controller.MainController;
+import no.netb.magnetar.web.controller.MagnetarController;
+import no.netb.magnetar.web.controller.NewHostController;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -29,10 +30,11 @@ public class MagnetarWebapp {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
 
-        this.faultController = new FaultController();
-
         this.controllersByURL = new HashMap<>();
-        controllersByURL.put("/", new MainController());
+        controllersByURL.put("/", new MainController(templateEngine));
+        controllersByURL.put("/newHost", new NewHostController(templateEngine));
+
+        this.faultController = new FaultController(templateEngine);
     }
 
     public Optional<MagnetarController> resolveControllerByURL(String url) {
@@ -41,9 +43,5 @@ public class MagnetarWebapp {
 
     public MagnetarController getFaultController() {
         return faultController;
-    }
-
-    public TemplateEngine getTemplateEngine() {
-        return templateEngine;
     }
 }
