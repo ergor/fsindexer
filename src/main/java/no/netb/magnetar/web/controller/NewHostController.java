@@ -1,9 +1,12 @@
 package no.netb.magnetar.web.controller;
 
 import com.sun.net.httpserver.HttpExchange;
+import no.netb.magnetar.models.Host;
+import no.netb.magnetar.repository.HostRepository;
 import no.netb.magnetar.web.app.Response;
 import no.netb.magnetar.web.app.Template;
 import no.netb.magnetar.web.constants.HttpHeader;
+import no.netb.magnetar.web.constants.HttpStatus;
 import no.netb.magnetar.web.constants.MimeType;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
@@ -31,6 +34,21 @@ public class NewHostController extends MagnetarController {
 
         Map<String, String> rArgs = extractPostArgs(request);
 
-        return Response.redirect("/");
+        String name = rArgs.get("name");
+        String sshName = rArgs.get("sshName");
+
+        if (name == null || sshName == null) {
+            return handleError(HttpStatus.HTPP_400, cArgs.request, null);
+        }
+
+        HostRepository hostRepository = cArgs.repository.get(HostRepository.class);
+
+        Host host = new Host();
+        host.setName(name);
+        host.setSshConfigName(sshName);
+
+        host.saveOrFail(cArgs.repository.getDatabase());
+
+        return Response.redirect(Template.MAIN);
     }
 }

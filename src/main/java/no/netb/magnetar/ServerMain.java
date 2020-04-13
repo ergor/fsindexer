@@ -4,7 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import no.netb.magnetar.repository.RepositoryMap;
+import no.netb.magnetar.repository.Repository;
 import no.netb.magnetar.web.constants.HttpHeader;
 import no.netb.magnetar.web.constants.HttpStatus;
 import no.netb.magnetar.web.app.MagnetarWebapp;
@@ -21,10 +21,10 @@ public class ServerMain implements Runnable{
 
     private static final Logger LOG = Logger.getLogger(ServerMain.class.getName());
 
-    private final RepositoryMap repositories;
+    private final Repository repository;
 
-    public ServerMain(RepositoryMap repositories) {
-        this.repositories = repositories;
+    public ServerMain(Repository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ServerMain implements Runnable{
 
         MagnetarWebapp webapp = new MagnetarWebapp();
 
-        server.createContext("/", new MagnetarServer(webapp, repositories));
+        server.createContext("/", new MagnetarServer(webapp, repository));
         server.setExecutor(null); // run on main thread
         LOG.info("localhost:" + port + " running...");
         server.start();
@@ -49,17 +49,17 @@ public class ServerMain implements Runnable{
     static class MagnetarServer implements HttpHandler {
 
         private final MagnetarWebapp webapp;
-        private final RepositoryMap repositories;
+        private final Repository repository;
 
-        public MagnetarServer(MagnetarWebapp webapp, RepositoryMap repositories) {
+        public MagnetarServer(MagnetarWebapp webapp, Repository repository) {
             this.webapp = webapp;
-            this.repositories = repositories;
+            this.repository = repository;
         }
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             Response response = webapp.resolveControllerByURL(httpExchange.getRequestURI().toString())
-                    .map(controller -> controller.applyTemplate(httpExchange, repositories))
+                    .map(controller -> controller.applyTemplate(httpExchange, repository))
                     .orElseGet(() -> webapp.getFaultController().handleError(HttpStatus.HTTP_404, httpExchange, null));
 
             Headers responseHeaders = httpExchange.getResponseHeaders();

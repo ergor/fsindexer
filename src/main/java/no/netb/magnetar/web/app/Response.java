@@ -20,8 +20,8 @@ public class Response {
         return new Response(HttpStatus.HTTP_200, templateEngine.process(template.templateName, ctx), "");
     }
 
-    public static Response redirect(String location) {
-        return new Response(HttpStatus.HTTP_303, "", location);
+    public static Response redirect(Template location) {
+        return new Response(HttpStatus.HTTP_303, "", location.requestPath);
     }
 
     public static Response withStatus(HttpStatus httpStatus, Template template, ITemplateEngine templateEngine, Context ctx) {

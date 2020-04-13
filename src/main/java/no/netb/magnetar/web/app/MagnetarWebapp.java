@@ -31,8 +31,8 @@ public class MagnetarWebapp {
         this.templateEngine.setTemplateResolver(templateResolver);
 
         this.controllersByURL = new HashMap<>();
-        controllersByURL.put("/", new MainController(templateEngine));
-        controllersByURL.put("/newHost", new NewHostController(templateEngine));
+        controllersByURL.put(Template.MAIN.requestPath, new MainController(templateEngine));
+        controllersByURL.put(Template.NEW_HOST.requestPath, new NewHostController(templateEngine));
 
         this.faultController = new FaultController(templateEngine);
     }

@@ -5,7 +5,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import no.netb.libjcommon.ExceptionUtil;
 import no.netb.libjcommon.StreamUtil;
-import no.netb.magnetar.repository.RepositoryMap;
+import no.netb.magnetar.repository.Repository;
 import no.netb.magnetar.web.constants.HttpHeader;
 import no.netb.magnetar.web.constants.HttpStatus;
 import no.netb.magnetar.web.app.Response;
@@ -35,29 +35,32 @@ public abstract class MagnetarController {
 
     static class ControllerArgs {
         final HttpExchange request;
-        final RepositoryMap repositories;
+        final Repository repository;
 
-        public ControllerArgs(HttpExchange request, RepositoryMap repositories) {
+        public ControllerArgs(HttpExchange request, Repository repository) {
             this.request = request;
-            this.repositories = repositories;
+            this.repository = repository;
         }
     }
 
     public Response applyTemplate(
             final HttpExchange request,
-            final RepositoryMap repositories) {
-        ControllerArgs args = new ControllerArgs(request, repositories);
+            final Repository repository) {
+        ControllerArgs args = new ControllerArgs(request, repository);
         try {
             Context context = new Context();
             switch (request.getRequestMethod().toLowerCase()) {
                 case "get":
                     return handleGetRequest(context, args);
                 case "post":
-                    return handlePostRequest(context, args);
+                    Response postResponse = handlePostRequest(context, args);
+                    repository.getDatabase().commit();
+                    return postResponse;
                 default:
                     return methodUnsupported(request);
             }
         } catch (Exception e) {
+            // discard db changes
             return handleError(HttpStatus.HTTP_500, request, e);
         }
     }
@@ -104,12 +107,15 @@ public abstract class MagnetarController {
         Map<String, String> args = new HashMap<>();
 
         if (hasHeaderValue(headers, HttpHeader.CONTENT_TYPE, MimeType.APPLICATION__X_WWW_FORM_URLENCODED.string)) {
-            StringWriter stringWriter = new StringWriter();
-            InputStream is = request.getRequestBody();
+            String requestBody = StreamUtil.writeToString(request.getRequestBody());
+            String[] keyValPairs = requestBody.split("&");
 
-            String requestBody = StreamUtil.writeToString(is);
-
-            String decoded = URLDecoder.decode(requestBody, StandardCharsets.UTF_8.name());
+            for (String keyValPair : keyValPairs) {
+                String[] fields = keyValPair.split("=");
+                String key = URLDecoder.decode(fields[0], StandardCharsets.UTF_8.name());
+                String value = URLDecoder.decode(fields[1], StandardCharsets.UTF_8.name());
+                args.put(key, value);
+            }
         }
 
         return args;

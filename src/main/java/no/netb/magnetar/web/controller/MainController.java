@@ -20,7 +20,7 @@ public class MainController extends MagnetarController {
     @Override
     protected Response handleGetRequest(Context ctx, ControllerArgs args) throws Exception {
 
-        List<Host> hosts = args.repositories.getRepo(HostRepository.class).getHosts().unwrap();
+        List<Host> hosts = args.repository.get(HostRepository.class).getHosts().unwrap();
 
         ctx.setVariable("hosts", hosts);
 
