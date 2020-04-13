@@ -41,6 +41,8 @@ public class Main {
                 : new SatelliteMain();
         main.run();
 
+        database.close(Database.CloseAction.COMMIT);
+
 //
 //        String hostname = "procyon";
 //        Result<List<Host>, Exception> hostResult = Jsqlite.selectN(Host.class, "WHERE h.name = ?", hostname);

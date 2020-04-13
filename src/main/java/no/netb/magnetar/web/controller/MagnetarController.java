@@ -17,6 +17,7 @@ import org.thymeleaf.context.Context;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,12 @@ public abstract class MagnetarController {
                     return methodUnsupported(request);
             }
         } catch (Exception e) {
-            // discard db changes
+            try {
+                repository.getDatabase().rollback();
+            } catch (SQLException se) {
+                LOG.log(Level.SEVERE, "magnetar: failed to rollback database. terminate execution", se);
+                throw new RuntimeException(se);
+            }
             return handleError(HttpStatus.HTTP_500, request, e);
         }
     }
