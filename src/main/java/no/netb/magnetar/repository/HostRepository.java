@@ -1,9 +1,9 @@
 package no.netb.magnetar.repository;
 
-import no.netb.libjcommon.result.Result;
 import no.netb.libjsqlite.Database;
 import no.netb.magnetar.models.Host;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,7 +15,7 @@ public class HostRepository extends AbstractRepository {
         super(database);
     }
 
-    public Result<List<Host>, Exception> getHosts() {
+    public List<Host> getHosts() throws IllegalAccessException, SQLException, InstantiationException {
         return database.selectN(Host.class, "");
     }
 }

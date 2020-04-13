@@ -7,6 +7,7 @@ import no.netb.magnetar.models.Host;
 import no.netb.magnetar.models.IndexingRun;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +36,13 @@ public class FsNodeRepository extends AbstractRepository {
         fsNodeCache.get(indexingRun).put(file, fsNode);
     }
 
-    public Optional<FsNode> get(IndexingRun indexingRun, File file) {
+    public Optional<FsNode> get(IndexingRun indexingRun, File file) throws IllegalAccessException, SQLException, InstantiationException {
         Optional<FsNode> cachedNode = getCached(indexingRun, file);
         if (cachedNode.isPresent()) {
             return cachedNode;
         }
 
-        Result<List<FsNode>, Exception> selectResult = database.selectN(
+        List<FsNode> fsNodes = database.selectN(
                 FsNode.class,
                 "WHERE f.indexingRunId = ? AND f.isFile = ? AND f.name = ? AND f.path = ?",
                 indexingRun.getId(),
@@ -49,10 +50,6 @@ public class FsNodeRepository extends AbstractRepository {
                 file.getName(),
                 file.getAbsolutePath());
 
-        if (selectResult.isErr()) {
-            throw new RuntimeException("FIXME", selectResult.unwrapErr());
-        }
-        List<FsNode> fsNodes = selectResult.unwrap();
         if (fsNodes.isEmpty()) {
             return Optional.empty();
         } else if (fsNodes.size() > 1) {
@@ -63,7 +60,7 @@ public class FsNodeRepository extends AbstractRepository {
         return Optional.of(fsNode);
     }
 
-    public FsNode getOrNew(Host host, IndexingRun indexingRun, File file, File parentDir) {
+    public FsNode getOrNew(Host host, IndexingRun indexingRun, File file, File parentDir) throws IllegalAccessException, SQLException, InstantiationException {
         Optional<FsNode> fsNodeOptional = get(indexingRun, file);
         if (fsNodeOptional.isPresent()) {
             return fsNodeOptional.get();
@@ -72,8 +69,9 @@ public class FsNodeRepository extends AbstractRepository {
         FsNode parentNode = null;
         if (parentDir != null) { // null means this dir is root
             Optional<FsNode> parentOptional = get(indexingRun, parentDir);
-            parentNode = parentOptional.orElseGet(
-                    () -> getOrNew(host, indexingRun, parentDir, parentDir.getParentFile()));
+            parentNode = parentOptional.isPresent()
+                    ? parentOptional.get()
+                    : getOrNew(host, indexingRun, parentDir, parentDir.getParentFile());
         }
 
         FsNode fsNode = new FsNode(
@@ -88,7 +86,7 @@ public class FsNodeRepository extends AbstractRepository {
                 indexingRun.getId()
         );
 
-        fsNode.saveOrFail(database);
+        fsNode.save(database);
         putCache(indexingRun, file, fsNode);
         return fsNode;
     }

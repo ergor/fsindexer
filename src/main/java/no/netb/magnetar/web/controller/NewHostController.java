@@ -11,6 +11,8 @@ import no.netb.magnetar.web.constants.MimeType;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class NewHostController extends MagnetarController {
@@ -25,7 +27,7 @@ public class NewHostController extends MagnetarController {
     }
 
     @Override
-    protected Response handlePostRequest(Context ctx, ControllerArgs cArgs) throws Exception {
+    protected Response handlePostRequest(Context ctx, ControllerArgs cArgs) throws IOException, SQLException {
         HttpExchange request = cArgs.request;
 
         if (!hasHeaderValue(request.getRequestHeaders(), HttpHeader.CONTENT_TYPE, MimeType.APPLICATION__X_WWW_FORM_URLENCODED.string)) {
@@ -47,7 +49,7 @@ public class NewHostController extends MagnetarController {
         host.setName(name);
         host.setSshConfigName(sshName);
 
-        host.saveOrFail(cArgs.repository.getDatabase());
+        host.save(cArgs.repository.getDatabase());
 
         return Response.redirect(Template.MAIN);
     }

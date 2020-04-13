@@ -16,7 +16,9 @@ import java.nio.file.LinkOption;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +55,7 @@ public class Indexer implements Runnable {
         fsNodeRepository = new FsNodeRepository(database);
     }
 
-    public Result<Object, String> index(File directory) {
+    public Result<Object, String> index(File directory) throws IllegalAccessException, SQLException, InstantiationException {
 
         if (!directory.isDirectory()) {
             return Result.err(String.format("Indexer: %s is not a directory (expected directory).", directory.getAbsolutePath()));
@@ -66,7 +68,7 @@ public class Indexer implements Runnable {
         }
 
         IndexingRun indexingRun = new IndexingRun();
-        indexingRun.saveOrFail(database);
+        indexingRun.save(database);
 
         FsNode directoryNode = fsNodeRepository.getOrNew(host, indexingRun, directory, directory.getParentFile());
         readFileAttributes(directory, directoryNode);
@@ -75,10 +77,11 @@ public class Indexer implements Runnable {
             FsNode fileNode = fsNodeRepository.getOrNew(host, indexingRun, file, directory);
             readFileAttributes(file, fileNode);
             if (file.isFile()) {
-                sha1Checksum(file).ifPresent(checksum -> {
-                    fileNode.setSha1Checksum(sha1String(checksum));
-                    fileNode.saveOrFail(database);
-                });
+                Optional<byte[]> sha1Optional = sha1Checksum(file);
+                if (sha1Optional.isPresent()) {
+                    fileNode.setSha1Checksum(sha1String(sha1Optional.get()));
+                    fileNode.save(database);
+                }
             }
         }
 
@@ -101,12 +104,10 @@ public class Indexer implements Runnable {
             return Optional.of(sha1Digest.digest());
         }
         catch (FileNotFoundException e) {
-            LOG.warning("WARNING: failed to open file for reading: " + file.getAbsolutePath());
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "failed to open file for reading: " + file.getAbsolutePath(), e);
         }
         catch (IOException e) {
-            LOG.warning("WARNING: failed while reading file: " + file.getAbsolutePath());
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "failed while reading file: " + file.getAbsolutePath(), e);
         }
         return Optional.empty();
     }

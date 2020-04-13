@@ -68,7 +68,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Convenient stuff like Result<V, E> and Pair<A, B> -->
+        <!-- Convenient stuff like ? (remove?)-->
         <dependency>
             <groupId>no.netb</groupId>
             <artifactId>libjcommon</artifactId>
