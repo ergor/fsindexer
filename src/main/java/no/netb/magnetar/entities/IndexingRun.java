@@ -13,6 +13,7 @@ public class IndexingRun {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private Timestamp timestamp;
+
     public IndexingRun() {
         this.timestamp = new Timestamp(System.currentTimeMillis());
     }

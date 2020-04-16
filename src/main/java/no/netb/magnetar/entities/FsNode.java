@@ -25,15 +25,11 @@ public class FsNode {
     private String sha1Checksum;
     private FsNode parent;
     private Host host;
-
     /**
      * Idea: store new FsNodes from scratch for every IndexRun, so you can see how
      * the complete fs has changed for every run.
      */
-    private long indexingRunId;
-
-    public FsNode() {
-    }
+    private IndexingRun indexingRun;
 
     public enum NodeType  {
         FILE(0),
@@ -63,5 +59,8 @@ public class FsNode {
             }
             valueMap = Collections.unmodifiableMap(map);
         }
+    }
+
+    public FsNode() {
     }
 }
