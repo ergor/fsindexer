@@ -8,17 +8,18 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class MagnetarWebapp {
+public class MagnetarApplication {
 
     private final TemplateEngine templateEngine;
     private final Map<String, MagnetarController> controllersByURL;
     private final MagnetarController faultController;
 
-    public MagnetarWebapp() {
+    public MagnetarApplication() {
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver(this.getClass().getClassLoader());
         templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -37,11 +38,28 @@ public class MagnetarWebapp {
         this.faultController = new FaultController(templateEngine);
     }
 
-    public Optional<MagnetarController> resolveControllerByURL(String url) {
-        return Optional.ofNullable(controllersByURL.get(url));
+    public Optional<MagnetarController> resolveControllerForRequest(HttpServletRequest request) {
+        String path = getRequestPath(request);
+        return Optional.ofNullable(controllersByURL.get(path));
     }
 
     public MagnetarController getFaultController() {
         return faultController;
+    }
+
+    private static String getRequestPath(final HttpServletRequest request) {
+
+        String requestURI = request.getRequestURI();
+        final String contextPath = request.getContextPath();
+
+        final int fragmentIndex = requestURI.indexOf(';');
+        if (fragmentIndex != -1) {
+            requestURI = requestURI.substring(0, fragmentIndex);
+        }
+
+        if (requestURI.startsWith(contextPath)) {
+            return requestURI.substring(contextPath.length());
+        }
+        return requestURI;
     }
 }

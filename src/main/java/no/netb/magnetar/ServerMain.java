@@ -8,7 +8,7 @@ import no.netb.libjcommon.StreamUtil;
 import no.netb.magnetar.repository.Repository;
 import no.netb.magnetar.web.constants.HttpHeader;
 import no.netb.magnetar.web.constants.HttpStatus;
-import no.netb.magnetar.web.app.MagnetarWebapp;
+import no.netb.magnetar.web.app.MagnetarApplication;
 import no.netb.magnetar.web.app.Response;
 import no.netb.magnetar.web.constants.MimeType;
 
@@ -41,7 +41,7 @@ public class ServerMain implements Runnable{
             System.exit(ExitCode.INTERNAL_ERROR.value);
         }
 
-        MagnetarWebapp webapp = new MagnetarWebapp();
+        MagnetarApplication webapp = new MagnetarApplication();
 
         server.createContext("/", new MagnetarServer(webapp, repository));
         server.setExecutor(null); // run on main thread
@@ -51,10 +51,10 @@ public class ServerMain implements Runnable{
 
     static class MagnetarServer implements HttpHandler {
 
-        private final MagnetarWebapp webapp;
+        private final MagnetarApplication webapp;
         private final Repository repository;
 
-        public MagnetarServer(MagnetarWebapp webapp, Repository repository) {
+        public MagnetarServer(MagnetarApplication webapp, Repository repository) {
             this.webapp = webapp;
             this.repository = repository;
         }
@@ -71,7 +71,7 @@ public class ServerMain implements Runnable{
         }
 
         private void handleWebapp(HttpExchange httpExchange) throws IOException {
-            Response response = webapp.resolveControllerByURL(httpExchange.getRequestURI().toString())
+            Response response = webapp.resolveControllerForRequest(httpExchange.getRequestURI().toString())
                     .map(controller -> controller.applyTemplate(httpExchange, repository))
                     .orElseGet(() -> webapp.getFaultController().notFound(httpExchange));
 
