@@ -1,9 +1,6 @@
 package no.netb.magnetar.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class HostIdentifier {
@@ -11,8 +8,15 @@ public class HostIdentifier {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hostId")
     private Host host;
+
+    @Column(columnDefinition = "TEXT")
     private String fqdn;
+
+    @Column(columnDefinition = "TEXT")
     private String ipAddress;
 
     public HostIdentifier() {

@@ -1,9 +1,6 @@
 package no.netb.magnetar.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Host {
@@ -11,7 +8,11 @@ public class Host {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @Column(columnDefinition = "TEXT")
     private String name;
+
+    @Column(columnDefinition = "TEXT")
     private String sshConfigName;
 
     public Host() {
