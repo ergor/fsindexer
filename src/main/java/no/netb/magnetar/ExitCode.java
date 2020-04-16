@@ -5,7 +5,7 @@ public enum  ExitCode {
     ARGS_INVALID(2)
     ;
 
-    int value;
+    public int value;
 
     ExitCode(int value) {
         this.value = value;

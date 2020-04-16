@@ -5,6 +5,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import no.netb.libjcommon.ExceptionUtil;
 import no.netb.libjcommon.StreamUtil;
+import no.netb.magnetar.ExitCode;
 import no.netb.magnetar.repository.Repository;
 import no.netb.magnetar.web.constants.HttpHeader;
 import no.netb.magnetar.web.constants.HttpStatus;
@@ -65,7 +66,7 @@ public abstract class MagnetarController {
                 repository.getDatabase().rollback();
             } catch (SQLException se) {
                 LOG.log(Level.SEVERE, "magnetar: failed to rollback database. terminate execution", se);
-                throw new RuntimeException(se);
+                System.exit(ExitCode.INTERNAL_ERROR.value);
             }
             return handleError(HttpStatus.HTTP_500, request, e);
         }
@@ -78,15 +79,19 @@ public abstract class MagnetarController {
         return methodUnsupported(args.request);
     }
 
-    private Response methodUnsupported(HttpExchange request) {
+    public Response methodUnsupported(HttpExchange request) {
         return handleError(HttpStatus.HTTP_405, request, null);
     }
 
-    protected Response unsupportedMediaType(HttpExchange request) {
+    public Response unsupportedMediaType(HttpExchange request) {
         return handleError(HttpStatus.HTTP_415, request, null);
     }
 
-    public Response handleError(
+    public Response notFound(HttpExchange request) {
+        return handleError(HttpStatus.HTTP_404, request, null);
+    }
+
+    protected Response handleError(
             final HttpStatus httpStatus,
             final HttpExchange request,
             final @Nullable Exception e) {
@@ -113,7 +118,7 @@ public abstract class MagnetarController {
         Map<String, String> args = new HashMap<>();
 
         if (hasHeaderValue(headers, HttpHeader.CONTENT_TYPE, MimeType.APPLICATION__X_WWW_FORM_URLENCODED.string)) {
-            String requestBody = StreamUtil.writeToString(request.getRequestBody());
+            String requestBody = StreamUtil.writeToString(request.getRequestBody(), StandardCharsets.UTF_8);
             String[] keyValPairs = requestBody.split("&");
 
             for (String keyValPair : keyValPairs) {
