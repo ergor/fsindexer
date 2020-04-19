@@ -1,4 +1,4 @@
-package no.netb.magnetar.entities;
+package no.netb.magnetar.entities.indexing;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -51,8 +51,8 @@ public class FsNode {
     @JoinColumn(name = "hostId")
     private Host host;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fsNode")
-    private FsNodeDelta fsNodeDelta;
+    //@OneToOne(fetch = FetchType.LAZY, mappedBy = "fsNode")
+    //private FsNodeDelta fsNodeDelta;
 
     /**
      * Idea: store new FsNodes from scratch for every IndexRun, so you can see how

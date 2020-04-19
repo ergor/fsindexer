@@ -26,7 +26,7 @@ needed when you want to store submitted data, and to load data and insert it
 into Thymeleaf context.
 
 Controllers:
-    Every request mapped method must return a ViewName.
+    Every RequestMapping annotated method must return a ViewName.
     Must have at least 1 valid GetMapping("/RequestPath") annotated method.
     Populating Thymeleaf context is done with Model Maps.
     This can be done in multiple ways. One option is to annotate a method with

@@ -1,4 +1,4 @@
-package no.netb.magnetar.web.constants;
+package no.netb.magnetar.constants;
 
 public enum HttpHeader {
     LOCATION("Location"),

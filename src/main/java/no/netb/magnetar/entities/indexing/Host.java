@@ -1,4 +1,4 @@
-package no.netb.magnetar.entities;
+package no.netb.magnetar.entities.indexing;
 
 import javax.persistence.*;
 import java.util.List;

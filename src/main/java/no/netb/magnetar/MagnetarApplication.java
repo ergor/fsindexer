@@ -13,6 +13,9 @@ import java.util.Objects;
 @SpringBootApplication
 public class MagnetarApplication {
 
+	public static final String WEBUI_PATH = "/webui";
+	public static final String API_PATH = "/api";
+
 	@Autowired
 	Environment env;
 
@@ -28,5 +31,12 @@ public class MagnetarApplication {
 		dataSource.setUsername(env.getProperty("db.username"));
 		dataSource.setPassword(env.getProperty("db.password"));
 		return dataSource;
+	}
+
+	public static String webuiPath(String requestPath) {
+		return WEBUI_PATH + requestPath;
+	}
+	public static String apiPath(String requestPath) {
+		return API_PATH + requestPath;
 	}
 }

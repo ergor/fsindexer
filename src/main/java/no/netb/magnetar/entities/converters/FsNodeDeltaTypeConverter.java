@@ -1,6 +1,6 @@
 package no.netb.magnetar.entities.converters;
 
-import no.netb.magnetar.entities.FsNodeDelta;
+import no.netb.magnetar.entities.indexing.FsNodeDelta;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

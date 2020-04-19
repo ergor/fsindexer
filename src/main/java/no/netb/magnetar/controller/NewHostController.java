@@ -1,6 +1,6 @@
 package no.netb.magnetar.controller;
 
-import no.netb.magnetar.entities.Host;
+import no.netb.magnetar.entities.indexing.Host;
 import no.netb.magnetar.repository.HostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +13,12 @@ public class NewHostController {
     @Autowired
     HostRepository hostRepository;
 
-    @GetMapping("/new_host")
+    @GetMapping("/webui/new_host")
     public String newHostForm() {
         return "new_host";
     }
 
-    @PostMapping("/new_host")
+    @PostMapping("/webui/new_host")
     @ResponseStatus(HttpStatus.SEE_OTHER)
     public String submit(@RequestParam("displayName") String displayName, @RequestParam("fqdn") String fqdn) {
         Host host = new Host();
