@@ -51,6 +51,9 @@ public class FsNode {
     @JoinColumn(name = "hostId")
     private Host host;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fsNode")
+    private FsNodeDelta fsNodeDelta;
+
     /**
      * Idea: store new FsNodes from scratch for every IndexRun, so you can see how
      * the complete fs has changed for every run.

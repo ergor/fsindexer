@@ -1,6 +1,7 @@
 package no.netb.magnetar.entities;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Host {
@@ -10,11 +11,38 @@ public class Host {
     private long id;
 
     @Column(columnDefinition = "TEXT")
-    private String name;
+    private String displayName;
 
     @Column(columnDefinition = "TEXT")
-    private String sshConfigName;
+    private String fqdn;
+
+    @OneToMany(mappedBy = "host")
+    private List<HostAddress> addresses;
 
     public Host() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getFqdn() {
+        return fqdn;
+    }
+
+    public void setFqdn(String fqdn) {
+        this.fqdn = fqdn;
+    }
+
+    public List<HostAddress> getAddresses() {
+        return addresses;
     }
 }

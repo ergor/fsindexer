@@ -1,0 +1,35 @@
+--------------------------------------------------------------------------------
+DEFINITIONS:
+
+View: a thymeleaf template
+ViewName: the name of the View (ie the html file name, without the ".html"
+          extension)
+RequestPath: URL path
+Controller: a java class annotated with @Controller
+
+--------------------------------------------------------------------------------
+RELEVANT CLASSES:
+
+no.netb.magnetar.MvcConfig
+    RequestPath -> ViewName mapping
+
+no.netb.magnetar.controller.*
+    Contains all the controllers
+
+--------------------------------------------------------------------------------
+
+HOW IT WORKS:
+
+When you navigate to a valid RequestPath, you will be served the corresponding
+View. A Controller is optional, but is needed to process requests. I.e, it is
+needed when you want to store submitted data, and to load data and insert it
+into Thymeleaf context.
+
+Controllers:
+    Every request mapped method must return a ViewName.
+    Must have at least 1 valid GetMapping("/RequestPath") annotated method.
+    Populating Thymeleaf context is done with Model Maps.
+    This can be done in multiple ways. One option is to annotate a method with
+    @ModelAttribute("name"), which will allow you to use "{name}" in the
+    template.
+    See https://www.thymeleaf.org/doc/articles/springmvcaccessdata.html

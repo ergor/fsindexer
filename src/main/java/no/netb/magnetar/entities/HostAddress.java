@@ -3,7 +3,7 @@ package no.netb.magnetar.entities;
 import javax.persistence.*;
 
 @Entity
-public class HostIdentifier {
+public class HostAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,11 +14,8 @@ public class HostIdentifier {
     private Host host;
 
     @Column(columnDefinition = "TEXT")
-    private String fqdn;
-
-    @Column(columnDefinition = "TEXT")
     private String ipAddress;
 
-    public HostIdentifier() {
+    public HostAddress() {
     }
 }
