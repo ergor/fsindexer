@@ -1,11 +1,10 @@
 package no.netb.magnetar.entities.indexing;
 
+import no.netb.magnetar.constants.Posix;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 public class FsNode {
@@ -25,7 +24,7 @@ public class FsNode {
 
     private int gid;
 
-    private int permissions;
+    private EnumSet<Posix.Permission> permissions;
 
     private Timestamp creationDate;
 
@@ -62,6 +61,9 @@ public class FsNode {
     @JoinColumn(name = "indexingRunId")
     private IndexingRun indexingRun;
 
+    public FsNode() {
+    }
+
     public enum NodeType  {
         FILE(0),
         DIRECTORY(1),
@@ -90,8 +92,5 @@ public class FsNode {
             }
             valueMap = Collections.unmodifiableMap(map);
         }
-    }
-
-    public FsNode() {
     }
 }
