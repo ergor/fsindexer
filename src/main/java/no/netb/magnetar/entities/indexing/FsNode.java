@@ -15,6 +15,12 @@ public class FsNode {
 
     private NodeType nodeType;
 
+    @Column(length = 40)
+    private String sha1Checksum;
+
+    @Column(columnDefinition = "TEXT")
+    private String parentPath;
+
     @Column(columnDefinition = "TEXT")
     private String name;
 
@@ -31,13 +37,11 @@ public class FsNode {
     private Timestamp modifiedDate;
 
     @Column(columnDefinition = "TEXT")
-    private String path;
+    private String linksTo; // for soft links (symlinks)
 
-    @Column(columnDefinition = "TEXT")
-    private String linksTo;
+    private long inode;
 
-    @Column(length = 40)
-    private String sha1Checksum;
+    private long nlinks; // number of hard links to this inode
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentId")
